@@ -20,6 +20,8 @@ class UserModel(Base):
     username = mapped_column(String, index=True)
     password = mapped_column(String)
 
+    role = mapped_column(String, default='standard')
+
     created_at = mapped_column(DateTime, default=datetime.now)
 
 

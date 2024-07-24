@@ -36,10 +36,10 @@ allowed = [
 ]
 
 kernel.add_middleware(
-  CORSMiddleware,
-  allow_origins = allowed,
-  allow_methods = ["*"],
-  allow_headers = ["*"]
+    CORSMiddleware,
+    allow_origins=allowed,
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 
@@ -62,13 +62,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             detail="Неверный логин или пароль",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    access_token_expires = timedelta(minutes=int(os.environ['ACCESS_TOKEN_EXPIRE_MINUTES']))
+
+    access_token_expires = timedelta(minutes=int(
+        os.environ['ACCESS_TOKEN_EXPIRE_MINUTES']))
 
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
- 
+
     return Token(access_token=access_token, token_type="bearer")
 
 
@@ -90,6 +91,16 @@ async def read_own_items(current_user: User = Depends(get_current_user)):
 
 @kernel.post('/api/v1.0/tasks/create_new')
 async def add_new_task(task: TaskValidator, current_user: User = Depends(get_current_user)) -> int:
+    '''
+    Create new task
+    '''
+
+    tasks = get_user_tasks(current_user.id)
+    if len(tasks) >= 5 and current_user.role == 'standard':
+        raise HTTPException(403, 'Too much tasks')
+    if len(tasks) >= 10 and current_user.role == 'premium':
+        raise HTTPException(403, 'Too much tasks')
+
     new_task = create_task(current_user.id, task.name, task.description)
 
     return new_task.id
@@ -117,13 +128,15 @@ async def read_own_items(base_task_id: int, current_user: User = Depends(get_cur
 
 @kernel.post("/api/v1.0/subtasks/create_new_subtask")
 async def add_new_subtask(subtask_data: SubtaskCreate, current_user: User = Depends(get_current_user)) -> int:
-    new_subtask = create_new_subtask(subtask_data.base_task_id, current_user.id, subtask_data.description)
+    new_subtask = create_new_subtask(
+        subtask_data.base_task_id, current_user.id, subtask_data.description)
 
     return new_subtask.id
 
 
 @kernel.post("/api/v1.0/subtasks/delete_subtask")
 async def delete_subtask(subtask_data: SubtaskDelete, current_user: User = Depends(get_current_user)):
-    delete_subtask_from_db(subtask_data.subtask_id, subtask_data.base_task_id, current_user.id)
+    delete_subtask_from_db(subtask_data.subtask_id,
+                           subtask_data.base_task_id, current_user.id)
 
     return None
