@@ -1,0 +1,16 @@
+For correct work:
+
+
+fastapi backend
+127.0.0.1:8080
+
+flask frontend
+127.0.0.1:80
+
+postgresql
+ip: localhost:5433
+username: postgres
+password: 918273
+database: postgres
+
++ execute database/models.py scripts for creating the tables
