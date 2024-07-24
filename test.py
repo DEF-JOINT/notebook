@@ -4,7 +4,7 @@ def summator(a, b) -> int:
 
 #   FrontEnd (browser)      Server (FastApi)
 #   User Login          <-      JWT
-#   FrontEnd saves JWT 
+#   FrontEnd saves JWT
 #   FrontEnd appends Header with Jwt to each request
 
 
@@ -24,3 +24,5 @@ def summator(a, b) -> int:
 
 # FrotEnd -> BackEnd -> DataBase
 # FrotEnd -> BackEnd -> DataBase -> BackEnd -> FrontEnd
+
+print('1')
