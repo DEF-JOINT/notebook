@@ -6,9 +6,9 @@ from database.models import TaskModel
 from database.models import SubTaskModel
 
 
-port = 5432
+port = 5433
 postgres_user = 'postgres'
-password = '123'
+password = 'haskell1'
 db_name = 'postgres'
 
 DATABASE_URL = f'postgresql+psycopg2://{postgres_user}:{password}@localhost:{port}/{db_name}'

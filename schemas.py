@@ -11,6 +11,7 @@ class User(BaseModel):
     id: str
     username: str
     password: str
+    role: str
     model_config = ConfigDict(coerce_numbers_to_str=True)
 
 
