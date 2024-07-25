@@ -53,7 +53,7 @@ kernel.add_middleware(
 async def create(user_data: UserCreate):
     new_user = create_user(user_data.username, user_data.password)
 
-    bot.send_message(-4, f'Создан новый пользователь под  логином {user_data.username}!')
+    bot.send_message(-4228405304, f'Создан новый пользователь под  логином {user_data.username}!')
 
     return new_user
 
