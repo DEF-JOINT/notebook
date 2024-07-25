@@ -1,6 +1,6 @@
 def summator(a, b) -> int:
     return a + b
-
+print(1)
 
 #   FrontEnd (browser)      Server (FastApi)
 #   User Login          <-      JWT
