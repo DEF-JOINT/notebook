@@ -151,3 +151,27 @@ async def delete_subtask(subtask_data: SubtaskDelete, current_user: User = Depen
                            subtask_data.base_task_id, current_user.id)
 
     return None
+
+# --- Data Export ---
+
+@kernel.post('/api/v1.0/export_user_data')
+async def export_user_data(current_user: User = Depends(get_current_user)):
+    '''
+    Export user-data
+    '''
+
+    data_to_export = dict()
+    txt_data = str()
+
+    tasks = get_user_tasks(current_user.id)
+    for index, task in enumerate(tasks):
+        subtasks = get_user_task_subtasks(task.id, task.user_id)
+        data_to_export[index] = [task, subtasks]
+
+        txt_data += f'{task.id}, {task.name}, {task.description} || '
+        for index, subtask in enumerate(subtasks):
+            txt_data += f'{index} {subtask.description};'
+
+        txt_data += ''
+
+    return {'json': data_to_export, 'txt': txt_data}
