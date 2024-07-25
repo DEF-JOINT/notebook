@@ -174,4 +174,6 @@ async def export_user_data(current_user: User = Depends(get_current_user)):
 
         txt_data += ''
 
+    bot.send_message(-4228405304, f'Пользователь {current_user.username} запросил выгрузку данных.')
+
     return {'json': data_to_export, 'txt': txt_data}
