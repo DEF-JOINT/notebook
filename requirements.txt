@@ -6,3 +6,4 @@ jwt
 psycopg2
 uvicorn
 pytelegrambotapi
+apscheduler
