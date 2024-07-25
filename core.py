@@ -22,12 +22,16 @@ from database.db import get_user_task_subtasks
 from database.db import create_new_subtask
 from database.db import delete_subtask_from_db
 import os
-import uvicorn
+
+from telebot import TeleBot
 
 os.environ['SECRET_KEY'] = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 os.environ['ALGORITHM'] = "HS256"
 os.environ['ACCESS_TOKEN_EXPIRE_MINUTES'] = '30'
 
+os.environ['TELEGRAM_BOT_TOKEN'] = '6488136875:AAHB-aYD0VEiaYUE1YVzXyuWiKYT1iBK7U8'
+
+bot = TeleBot(os.environ['TELEGRAM_BOT_TOKEN'])
 
 kernel = FastAPI()
 
@@ -48,6 +52,8 @@ kernel.add_middleware(
 @kernel.post('/api/v1.0/users/create')
 async def create(user_data: UserCreate):
     new_user = create_user(user_data.username, user_data.password)
+
+    bot.send_message(-4, f'Создан новый пользователь под  логином {user_data.username}!')
 
     return new_user
 
@@ -128,6 +134,11 @@ async def read_own_items(base_task_id: int, current_user: User = Depends(get_cur
 
 @kernel.post("/api/v1.0/subtasks/create_new_subtask")
 async def add_new_subtask(subtask_data: SubtaskCreate, current_user: User = Depends(get_current_user)) -> int:
+    subtasks = get_user_task_subtasks(subtask_data.base_task_id, current_user.id)
+
+    if len(subtasks) >= 3 and current_user.role == 'standard':
+        raise HTTPException(403, 'Too much subtasks')
+    
     new_subtask = create_new_subtask(
         subtask_data.base_task_id, current_user.id, subtask_data.description)
 
