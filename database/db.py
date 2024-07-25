@@ -6,9 +6,9 @@ from database.models import TaskModel
 from database.models import SubTaskModel
 
 
-port = 5433
+port = 5432
 postgres_user = 'postgres'
-password = 'haskell1'
+password = ''
 db_name = 'postgres'
 
 DATABASE_URL = f'postgresql+psycopg2://{postgres_user}:{password}@localhost:{port}/{db_name}'
@@ -17,6 +17,15 @@ engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
+
+def get_all_users():
+    database = SessionLocal()
+
+    users = database.query(UserModel).all()
+
+    database.close()
+
+    return users
 
 def get_user(username):
     database = SessionLocal()

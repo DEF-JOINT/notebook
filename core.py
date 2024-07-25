@@ -3,6 +3,8 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from jwt_auth.authentification import authenticate_user
 from jwt_auth.jwt_base import create_access_token
 from jwt_auth.auth_dependencies import get_current_user
@@ -21,7 +23,13 @@ from database.db import delete_task_from_db
 from database.db import get_user_task_subtasks
 from database.db import create_new_subtask
 from database.db import delete_subtask_from_db
+from database.db import get_all_users
+
+
 import os
+
+import datetime
+import json
 
 from telebot import TeleBot
 
@@ -177,3 +185,32 @@ async def export_user_data(current_user: User = Depends(get_current_user)):
     bot.send_message(-4228405304, f'Пользователь {current_user.username} запросил выгрузку данных.')
 
     return {'json': data_to_export, 'txt': txt_data}
+
+
+# --- Backups System ---
+
+def create_backup():
+    json_db_backup = dict()
+
+    users = get_all_users()
+    for user in users:
+        json_db_backup[user.username] = dict()
+        for index, task in enumerate(get_user_tasks(user.id)):
+            subtasks = [(subtask.base_task_id, subtask.id, subtask.user_id, subtask.description) for subtask in get_user_task_subtasks(task.id, user.id)]
+            json_db_backup[user.username][index] = [task.id, task.name, task.description, subtasks]
+
+    with open(f'backups/backup_{datetime.datetime.now().date()}.json', 'w', encoding='utf-8') as backup:
+        json.dump(json_db_backup, backup)
+
+    print('Backup successfully created')
+
+
+@kernel.on_event('startup')
+def init_scheduled_backups():
+    '''
+    Schedule backup process
+    '''
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(create_backup, 'interval', seconds=5)
+    scheduler.start()
