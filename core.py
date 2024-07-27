@@ -61,7 +61,8 @@ kernel.add_middleware(
 async def create(user_data: UserCreate):
     new_user = create_user(user_data.username, user_data.password)
 
-    bot.send_message(-4228405304, f'Создан новый пользователь под  логином {user_data.username}!')
+    bot.send_message(
+        -4245971637, f'Создан новый пользователь под  логином {user_data.username}!')
 
     return new_user
 
@@ -142,11 +143,12 @@ async def read_own_items(base_task_id: int, current_user: User = Depends(get_cur
 
 @kernel.post("/api/v1.0/subtasks/create_new_subtask")
 async def add_new_subtask(subtask_data: SubtaskCreate, current_user: User = Depends(get_current_user)) -> int:
-    subtasks = get_user_task_subtasks(subtask_data.base_task_id, current_user.id)
+    subtasks = get_user_task_subtasks(
+        subtask_data.base_task_id, current_user.id)
 
     if len(subtasks) >= 3 and current_user.role == 'standard':
         raise HTTPException(403, 'Too much subtasks')
-    
+
     new_subtask = create_new_subtask(
         subtask_data.base_task_id, current_user.id, subtask_data.description)
 
@@ -161,6 +163,7 @@ async def delete_subtask(subtask_data: SubtaskDelete, current_user: User = Depen
     return None
 
 # --- Data Export ---
+
 
 @kernel.post('/api/v1.0/export_user_data')
 async def export_user_data(current_user: User = Depends(get_current_user)):
@@ -182,7 +185,8 @@ async def export_user_data(current_user: User = Depends(get_current_user)):
 
         txt_data += ''
 
-    bot.send_message(-4228405304, f'Пользователь {current_user.username} запросил выгрузку данных.')
+    bot.send_message(
+        -4245971637, f'Пользователь {current_user.username} запросил выгрузку данных.')
 
     return {'json': data_to_export, 'txt': txt_data}
 
@@ -196,8 +200,10 @@ def create_backup():
     for user in users:
         json_db_backup[user.username] = dict()
         for index, task in enumerate(get_user_tasks(user.id)):
-            subtasks = [(subtask.base_task_id, subtask.id, subtask.user_id, subtask.description) for subtask in get_user_task_subtasks(task.id, user.id)]
-            json_db_backup[user.username][index] = [task.id, task.name, task.description, subtasks]
+            subtasks = [(subtask.base_task_id, subtask.id, subtask.user_id, subtask.description)
+                        for subtask in get_user_task_subtasks(task.id, user.id)]
+            json_db_backup[user.username][index] = [
+                task.id, task.name, task.description, subtasks]
 
     with open(f'backups/backup_{datetime.datetime.now().date()}.json', 'w', encoding='utf-8') as backup:
         json.dump(json_db_backup, backup)

@@ -8,7 +8,7 @@ from database.models import SubTaskModel
 
 port = 5432
 postgres_user = 'postgres'
-password = ''
+password = '123'
 db_name = 'postgres'
 
 DATABASE_URL = f'postgresql+psycopg2://{postgres_user}:{password}@localhost:{port}/{db_name}'
@@ -26,6 +26,7 @@ def get_all_users():
     database.close()
 
     return users
+
 
 def get_user(username):
     database = SessionLocal()
