@@ -218,5 +218,5 @@ def init_scheduled_backups():
     '''
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(create_backup, 'interval', days=1)
+    scheduler.add_job(create_backup, 'interval', minutes=1)
     scheduler.start()

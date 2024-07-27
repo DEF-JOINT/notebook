@@ -1,8 +1,8 @@
 fastapi
 sqlalchemy
 passlib
-bcrypt
-jwt
+bcrypt==4.0.1
+pyjwt
 psycopg2
 uvicorn
 pytelegrambotapi
