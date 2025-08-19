@@ -8,3 +8,5 @@ To install dependencies, run:
 4. Run database/models.py file to build DB structure
 
 5. Run project with uvicorn core:kernel
+
+6. test
