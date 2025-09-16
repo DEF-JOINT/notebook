@@ -10,3 +10,5 @@ To install dependencies, run:
 5. Run project with uvicorn core:kernel
 
 6. test
+
+7. deploy
